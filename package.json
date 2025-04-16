@@ -1,0 +1,12 @@
+{
+  "name": "imperial-russian-roleplay-system",
+  "version": "1.0.0",
+  "description": "Role play system to Second Life",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
