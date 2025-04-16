@@ -1,7 +1,7 @@
 const express = require('express');
 const { Client } = require('pg'); // Importa la librería pg para PostgreSQL
 const app = express();
-const port = 10000;
+const port = 10001;
 
 // Configura el middleware para analizar los datos JSON
 app.use(express.json());
