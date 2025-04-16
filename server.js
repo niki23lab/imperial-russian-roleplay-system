@@ -1,25 +1,20 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { Pool } = require("pg");
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Pool } = require('pg');
 const app = express();
+const port = process.env.PORT || 10000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// ✅ Usa la variable de entorno DATABASE_URL que Render te proporciona
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: 'postgresql://rpdatabase_user:OpMRB5AiNkRE2efkeRtM2C5HKo1K0Qd9@dpg-cvuqvrqdbo4c73f63u90-a.oregon-postgres.render.com/rpdatabase'
 });
 
-// ✅ Ruta para registrar jugadores
-app.post("/register", async (req, res) => {
+app.post('/register', async (req, res) => {
   const {
-    first_name,
-    last_name,
-    sex,
+    rp_firstname,
+    rp_lastname,
     age,
     social_rank,
     profession,
@@ -28,22 +23,19 @@ app.post("/register", async (req, res) => {
   } = req.body;
 
   try {
-    const result = await pool.query(
-      `INSERT INTO players 
-      (first_name, last_name, sex, age, social_rank, profession, birth_place, birth_year) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-      [first_name, last_name, sex, age, social_rank, profession, birth_place, birth_year]
+    await pool.query(
+      `INSERT INTO players (rp_firstname, rp_lastname, age, social_rank, profession, birth_place, birth_year)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [rp_firstname, rp_lastname, age, social_rank, profession, birth_place, birth_year]
     );
 
-    res.status(200).json({ success: true, id: result.rows[0].id });
-  } catch (err) {
-    console.error("Error inserting data:", err);
+    res.status(200).json({ success: true, message: "Player registered." });
+  } catch (error) {
+    console.error("Error inserting data:", error);
     res.status(500).json({ success: false, error: "Failed to register player." });
   }
 });
 
-// ✅ Render maneja el puerto automáticamente
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
