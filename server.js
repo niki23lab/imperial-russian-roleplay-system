@@ -20,34 +20,34 @@ client.connect()
     console.error('Error al conectar a la base de datos:', err);
   });
 
-// Middleware para parsear los cuerpos de las solicitudes como JSON
-app.use(express.json());
+// Configura Express para parsear el cuerpo de las solicitudes
+app.use(express.json()); // Para manejar los datos en formato JSON
+app.use(express.urlencoded({ extended: true })); // Para manejar los formularios con URL codificada
 
-// Ruta de ejemplo para tu servidor
-app.get('/', (req, res) => {
-  res.send('Servidor funcionando!');
-});
-
-// Ruta para registrar jugadores
+// Ruta para el registro de jugadores
 app.post('/register', async (req, res) => {
-  const { name, surname, age } = req.body; // Asegúrate de que el cliente esté enviando estos datos
+  const { name, surname, age } = req.body; // Se asume que estos campos se envían en el cuerpo de la solicitud
 
-  // Verificar que los datos sean válidos
   if (!name || !surname || !age) {
-    return res.status(400).json({ success: false, error: 'Faltan datos para el registro.' });
+    return res.status(400).json({ success: false, error: 'Faltan datos para el registro' });
   }
 
   try {
-    // Consulta para insertar los datos del jugador en la base de datos
+    // Inserta los datos del jugador en la base de datos
     const query = 'INSERT INTO players (name, surname, age) VALUES ($1, $2, $3)';
     await client.query(query, [name, surname, age]);
 
-    // Responder con éxito
-    res.status(200).json({ success: true, message: 'Jugador registrado correctamente' });
+    // Responde indicando que el registro fue exitoso
+    res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error al insertar datos:', error);
+    console.error('Error en la base de datos:', error);
     res.status(500).json({ success: false, error: 'Error al registrar el jugador' });
   }
+});
+
+// Ruta de ejemplo para probar el servidor
+app.get('/', (req, res) => {
+  res.send('Servidor funcionando!');
 });
 
 // Inicia el servidor
