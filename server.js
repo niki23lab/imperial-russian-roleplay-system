@@ -1,34 +1,42 @@
 const express = require('express');
-const { Pool } = require('pg');
 const bodyParser = require('body-parser');
+const { Pool } = require('pg');
 
+// Initialize Express app
 const app = express();
-const PORT = 10000;
+const port = 10000; // Change if necessary
 
-// Conexión real a tu base de datos en Neon
+// Database connection setup (replace with your actual database credentials)
 const pool = new Pool({
-  connectionString: 'postgresql://rpdatabase_user:OpMRB5AiNkRE2efkeRtM2C5HKo1K0Qd9@dpg-cvuqvrqdbo4c73f63u90-a.oregon-postgres.render.com/rpdatabase'
+  connectionString: "postgresql://rpdatabase_user:OpMRB5AiNkRE2efkeRtM2C5HKo1K0Qd9@dpg-cvuqvrqdbo4c73f63u90-a.oregon-postgres.render.com/rpdatabase"
 });
 
+// Middleware to parse incoming JSON requests
 app.use(bodyParser.json());
 
-// ✅ Ruta correcta: /register
-app.post('/register', async (req, res) => {
-  const { first_name, last_name, gender, age, class: player_class, profession } = req.body;
+// Endpoint for registration
+app.get('/register', async (req, res) => {
+    const { first_name, last_name, gender, age, role, profession } = req.query;
 
-  try {
-    await pool.query(
-      'INSERT INTO players (first_name, last_name, gender, age, class, profession) VALUES ($1, $2, $3, $4, $5, $6)',
-      [first_name, last_name, gender, age, player_class, profession]
-    );
+    // Validate that age is an integer
+    if (!Number.isInteger(parseInt(age))) {
+        return res.status(400).json({ error: 'Age must be an integer' });
+    }
 
-    res.status(200).json({ message: 'Player registered successfully.' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error in server', detail: error.message });
-  }
+    // Insert the data into the database
+    try {
+        const result = await pool.query(
+            'INSERT INTO players (first_name, last_name, gender, age, role, profession) VALUES ($1, $2, $3, $4, $5, $6)',
+            [first_name, last_name, gender, age, role, profession]
+        );
+        res.json({ message: 'User registered successfully' });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Failed to register user' });
+    }
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Servidor activo en puerto ${PORT}`);
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
