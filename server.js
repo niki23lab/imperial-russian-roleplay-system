@@ -18,7 +18,7 @@ const server = http.createServer((req, res) => {
         const data = JSON.parse(body); // Puede fallar si el JSON está mal
 
         const client = new Client({
-          connectionString: process.env.DATABASE_URL,
+          connectionString: process.env.DATABASE_URL,  // Aquí debe estar la URL de Render
           ssl: { rejectUnauthorized: false }
         });
 
