@@ -24,7 +24,7 @@ const server = http.createServer((req, res) => {
 
         await client.connect();
 
-        // 🔽 Asegúrate de que los nombres de columnas sean los correctos de tu tabla `players`
+        // Asegúrate de que los nombres de columnas sean los correctos de tu tabla `players`
         const query = `
           INSERT INTO players 
           (second_life_username, name, gender, age, roleplay_class, health, wealth, reputation, created_at, status) 
@@ -44,7 +44,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ status: "ok", mensaje: "Registrado correctamente" }));
       } catch (err) {
-        console.error("❌ Error en el servidor:", err);
+        console.error("❌ Error en el servidor:", err.message || err);
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Error en el servidor", detalle: err.message || "Sin mensaje" }));
       }
